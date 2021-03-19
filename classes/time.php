@@ -4,8 +4,9 @@ class Time{
 
     public function getTime(){
 
-        $timestump = time();
+        $timestump = new DateTime();
 
-        return date("Y/m/d", $timestump);
+        return $timestump->setTimeZone(new DateTimeZone('Asia/Tokyo'))->format('Y/m/d');
+        // return date("Y/m/d G:i", $timestump);
     }
 }

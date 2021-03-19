@@ -52,8 +52,8 @@ class User extends Database{
 
     // Diary list of mainPage.php
     public function indicateList($user_id){
-        $sql ="SELECT d.date, d.title, c.category_name FROM diary d, categories c 
-               WHERE d.category_id = c.category_id AND d.user_id = '$user_id' ORDER BY d.date DESC";
+        $sql ="SELECT d.date, d.title, c.category_name, d.diary_no FROM diary d, categories c 
+               WHERE d.category_id = c.category_id AND d.user_id = '$user_id' ORDER BY d.diary_no DESC";
 
         if($result = $this->conn->query($sql)){
             return $result;
@@ -64,11 +64,6 @@ class User extends Database{
     }
 
     public function makeDiary($user_id, $date, $title, $diary_text, $category){
-        // echo $user_id . "<br>";
-        // echo $date . "<br>";
-        // echo $title . "<br>";
-        // echo $diary_text . "<br>";
-        // echo $category;
 
         $sql_category = "SELECT category_id FROM categories 
         WHERE `user_id` = '$user_id' AND category_name = '$category'";
@@ -77,67 +72,28 @@ class User extends Database{
 
         if($result_cat->num_rows == 1){
             $category_id = $result_cat->fetch_assoc();
+
             $sql_diary = "INSERT INTO diary(`user_id`, `date`, title, diary_text, category_id)
-                         VALUES ($user_id, '$date', '$title', '$diary_text',". $category_id['category_id'].")";
+                          VALUES ($user_id, '$date', '$title', '$diary_text',". $category_id['category_id'].")";
+
         }else{
             $sql_cate_insert = "INSERT INTO categories(`user_id`, category_name) VALUES ('$user_id', '$category')";
+
             if($this->conn->query($sql_cate_insert)){
                 $sql_diary = "INSERT INTO diary(`user_id`, `date`, title, diary_text, category_id)
-                         VALUES ($user_id, '$date', '$title', '$diary_text', ".$this->conn->insert_id.")";
+                              VALUES ($user_id, '$date', '$title', '$diary_text', ".$this->conn->insert_id.")";
+
             }else{
                 die("Error inserting new category : " . $this->conn->error);
             }
-
         }
 
         if($this->conn->query($sql_diary)){
-            echo "OK";
+            header("location: ../views/mainPage.php?id=$user_id");
+
         }else{
             die("Error creating new entry : " . $this->conn->error);
         }
-
-        
-
-
-        // $cat_name = $result->fetch_assoc();
-
-        // categoryとDBの値を突き合わせ
-        // if($sql_category_name != $category){ //the make category
-        //     echo "TRUE";
-        //     //新しくcategoryを追加
-        //     $sql_category = "INSERT INTO categories(`user_id`, category_name) VALUES ('$user_id', '$category')";
-
-        //     $select_category = "SELECT MAX(category_id) FROM categories WHERE `user_id` = '$user_id'";
-            
-
-        //     // $sql1 = "INSERT INTO diary(`user_id`, `date`, title, diary_text, category_id) 
-        //     //          VALUES ('$user_id', '$date', '$title', '$diary_text', '$select_category')";
-
-        //     if($result = $this->conn->query($select_category)){
-        //         return $result;
-        //         header("location: ../views/mainPage.php?id=$user_id");
-        //         exit;
-        //     }else{
-        //         die("Error retrieving users : " . $this->conn->error);
-        //         exit;
-        //     }
-        //     exit;
-        // }else{ //the same category
-        //     echo "FALSE";
-        //     $category_no = "SELECT category_id FROM categories WHERE category_name = '$category'";
-
-        //     $sql2 = "INSERT INTO diary(`user_id`, `date`, title, diary_text, category_no) 
-        //             VALUES ('$user_id', '$date', '$title', '$diary_text', '$category_no')";
-        //     exit;
-        // }
-
-        // if($result = $this->conn->query($sql)){
-        //     return $result;
-        //     header("location: ../views/mainPage.php?id=$user_id");
-        // }else{
-        //     die("Error retrieving users : " . $this->conn->error);
-        //}
-        
     }
 
     public function getUser($user_id){
@@ -147,13 +103,48 @@ class User extends Database{
         if($result = $this->conn->query($sql)){
             return $result->fetch_assoc();
 
-            //Use fetch_assoc() since we're expecting I row only
-            //return on associative array
-
         }else{
             die("Error retrieving users" . $this->conn->error);
         }
     }
+
+    public function updateDiary($diary_no, $date, $title, $category, $diary_text){
+        $sql_who = "SELECT `user_id` FROM diary WHERE diary_no = '$diary_no'";
+        
+        $sql_category = "SELECT category_id FROM categories 
+        WHERE `user_id` = '$sql_who' AND category_name = '$category'";
+        
+        $result_cat = $this->conn->query($sql_category);
+        $result_who = $this->conn->query($sql_who);
+        
+        if($result_cat->num_rows == 1){
+            $category_id = $result_cat->fetch_assoc();
+
+            $diary_up = "UPDATE diary SET title = '$title', category_id = $category_id, diary_text = $diary_text
+                         WHERE diary_no = '$diary_no'";
+            //$sql = "UPDATE users SET first_name  = '$first_name', last_name = '$last_name', username = '$username' WHERE id = $user_id ";
+            // $sql_diary = "INSERT INTO diary(`user_id`, `date`, title, diary_text, category_id)
+            //               VALUES ($user_id, '$date', '$title', '$diary_text',". $category_id['category_id'].")";
+
+        }else{
+            $sql_cate_insert = "INSERT INTO categories(`user_id`, category_name) VALUES ('$result_who', '$category')";
+
+            if($this->conn->query($sql_cate_insert)){
+                $diary_up = "UPDATE diary SET title = '$title', category_id =" .$this->conn->insert_id.", diary_text = $diary_text";
+
+            }else{
+                die("Error inserting new category : " . $this->conn->error);
+            }
+        }
+
+        if($this->conn->query($sql_diary)){
+            header("location: ../views/mainPage.php?id=$result_who");
+
+        }else{
+            die("Error creating new entry : " . $this->conn->error);
+        }
+    }
+    
 
     // public function updateUser($user_id, $first_name, $last_name, $username){
     //     $sql = "UPDATE users SET first_name  = '$first_name', last_name = '$last_name', username = '$username' WHERE id = $user_id ";

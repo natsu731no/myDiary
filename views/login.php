@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css4.6/bootstrap.css">
-    <title>Log in</title>
+    <title>LOGIN</title>
 </head>
 <body class="bg-dark">
     <div style="height: 100vh">
@@ -16,7 +16,7 @@
                 </div>
                 <div class="card-body bg-light">
                     <form action="../actions/login.php" method="post">
-                        <input type="text" name="username" placeholder="USERNAME" class="form-control mb-2" required autofocus>
+                        <input type="text" name="username" placeholder="USERNAME" class="form-control mb-2" maxlength="14" required autofocus>
                         <input type="password" name="password" placeholder="PASSWORD" class="form-control mb-25">
                         <!-- <button type="submit" class="btn btn-light btn-block">Log in</button> -->
                     

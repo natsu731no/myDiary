@@ -18,7 +18,7 @@
                     <div class="card-body">
                         <form action="../actions/register.php" method="POST">
                             <label for="username">Username</label>
-                            <input type="text" name="username" id="username" class="form-control mb-2 font-weight-bold" maxlength="15" required>
+                            <input type="text" name="username" id="username" class="form-control mb-2 font-weight-bold" maxlength="14" required>
                             <label for="password">Password</label>
                             <input type="password" name="password" id="password" class="form-control mb-5" minlength="8" required>
                             <button type="submit" name="btn_register" value="register" class="w-100 btn btn-success btn_block">Register</button>
