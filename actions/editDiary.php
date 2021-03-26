@@ -1,21 +1,15 @@
 <?php
-include_once "../classes/user.php";
-include_once "../classes/time.php";
+session_start();
+include_once "../classes/diary.php";
 include_once "../classes/checkPage.php";
 
-if(isset($_GET['id'])) { 
-    $no = $_GET['id']; 
-}
-$diary_no = $no;
+$diary_no = $_POST['diary_no'];
+$user_id = $_SESSION['user_id'];
+$title = $_POST['title'];
+$category = $_POST['category'];
+$diary_text = $_POST['diary_text'];
 
-$time = new Time;
-$date = $time->getTime();
+$diary = new Diary;
+$diary->updateDiary($diary_no, $user_id, $title, $category, $diary_text);
 
-$check = new checkPage;
-$checkPage = $check->check($diary_no);
-$title = $checkPage['title'];
-$category = $checkPage['category_name'];
-$diary_text = $checkPage['diary_text'];
 
-$user = new User;
-$user->updateDiary($diary_no, $date, $title, $category, $diary_text);

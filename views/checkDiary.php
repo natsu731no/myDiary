@@ -4,33 +4,21 @@ include_once "../classes/checkPage.php";
 include_once "../classes/category.php";
 include_once "../classes/database.php";
 include_once "../classes/user.php";
+include_once "../classes/time.php";
 
 if(isset($_GET['id'])) { 
     $diary_no = $_GET['id']; 
 }
 
-class Id extends database{
-    public function getId($diary_no){
-        $sql = "SELECT `user_id` FROM diary WHERE diary_no = '$diary_no'";
-
-        if($result = $this->conn->query($sql)){
-            return $result->fetch_assoc();;
-
-        }else{
-            die("Error selecting users" . $this->conn->error);
-        }
-    }
-}
-
-$id = new Id;
-$getId = $id->getId($diary_no); 
-
 $check = new checkPage;
 $checkPage = $check->check($diary_no);
 
+$date = new Time;
+$getDate = $date->getDateDay();
+
 //カテゴリー取得
 $category = new Category;
-$cat_result = $category->getCat($getId['user_id']);
+$cat_result = $category->getCat($_SESSION['user_id']);
 
 ?>
 
@@ -41,26 +29,30 @@ $cat_result = $category->getCat($getId['user_id']);
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css4.6/bootstrap.css">
+    <script src="https://kit.fontawesome.com/f3d03e8132.js" crossorigin="anonymous"></script>
+
     <title>CHECK DIARY</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark bg-info">
         <a href="mainPage.php?id=<?= $_SESSION['user_id'] ?>" class="navbar-brand">
-            <h1 class="h3">My Diary</h1>
+            <h1 class="h3" >My Diary</h1>
         </a>
         <div class="ml-auto">
             <ul class="navbar-nav">
-                <li class="nav-item"><a href="#" class="nav-link">Username: <?= $_SESSION['username'] ?></a></li>
-                <li class="nav-item"><a href="../actions/logout.php" class="nav-link text-danger">Log out</a></li>
+                <a class="btn btn-warning" href="../views/makeDiary.php?id=<?= $_SESSION['user_id'] ?>"><i class="far fa-plus-square"></i> &thinsp; CREATE DIARY</a>
+                <li class="nav-item"><a class="nav-link text-dark">Username: <?= $_SESSION['username'] ?></a></li>
+                <li class="nav-item"><a href="../actions/logout.php" class="nav-link text-danger">Log out &thinsp; <i class="fas fa-sign-out-alt"></i></a></li>
             </ul>
         </div>
     </nav>
 
     <main class="container" style="padding-top:80px">
-    <form action="../actions/makeDiary.php?id=<?= $_SESSION['user_id'] ?>" method="POST">
+    <form action="../actions/editDiary.php" method="POST">
+    <input type="hidden" name="diary_no" value="<?= $diary_no ?>">
         <div class="row">
             <div class="py-3">
-                <a name="date">DATE : <?= $checkPage['date']?></a>
+                <a name="date">DATE : <?= $getDate ?></a>
                  <!-- <h6 name="date">DATE : <?= $checkPage['date'] ?></h6> -->
             </div>
 
@@ -70,12 +62,12 @@ $cat_result = $category->getCat($getId['user_id']);
                         
                         <div class="form-group row">
                             <div class="col-7">
-                                <label for="title">TITLE</label>
-                                <input type="text" name="title" id="title" class="form-control mb-2" value="<?= $checkPage['title'] ?>" required >
+                                <h6 for="title">TITLE</h6>
+                                <input type="text" name="title" id="title" class="form-control mb-2" value="<?= $checkPage['title'] ?>" required autofocus>
                             </div>
 
                             <div class="col-4">
-                                <label for="category">CATEGORY</label>
+                                <h6 for="category">CATEGORY</h6>
                                 <?php
                                     if($cat_result->num_rows == 0){
                                 ?>
@@ -101,32 +93,18 @@ $cat_result = $category->getCat($getId['user_id']);
                         </div>
                             
                         <div class="form-group">
-                            <label for="username">TEXT</label>
+                            <h6 for="username">TEXT</h6>
                             <textarea class="form-control" name="diary_text" id="diary_text" rows="6"><?= $checkPage['diary_text'] ?></textarea>
                         
                         </div>
                         
                         <div class="button-group">
-                            <input type="button" neme="btn_cancel" value="RETURN" onclick="history.back()" class="w-20 btn btn-secondary btn-lg float-left"></input>
+                            <input type="button" neme="btn_cancel" value="RETURN" onclick="history.back()" tabindex="3" class="w-20 btn btn-secondary btn-lg float-left"></input>
                             
-                            <a name="btn_delete" class="w-25 btn btn-outline-danger btn-lg float-right" href="../views/makeDiary.php">DELETE</a>
-                            <a name="btn_edit" class="w-25 btn btn-warning btn-lg float-right" href="../actions/editDiary.php?id=<?= $diary_no ?>">EDIT</a>
+                            <a name="btn_delete" class="w-25 btn btn-outline-danger btn-lg float-right" tabindex="2" href="../actions/deleteDiary.php?id=<?= $diary_no ?>"><i class="fas fa-trash-alt"></i>&thinsp; DELETE</a>
+                            <button type="submit" name="btn_edit" class="w-25 btn btn-warning btn-lg float-right mr-3" tabindex="1" ><i class="fas fa-pen-nib"></i>&thinsp; UPDATE</button>
                         
                         </div>
-                        
-
-                        <!-- <div class="text-right">
-                            
-
-                            
-                            
-                            
-                             <a class="btn btn-outline-dark"href="../views/makeDiary.php">CANSEL</a> -->
-                            <!-- <a class="btn btn-outline-warning" href="../views/makeDiary.php">CREATE DIARY</a> -->
-                            <!-- <button type="button" name="btn_cansel" value="mainPage.php" class="w-25 btn btn-dark btn-lg">CANSEL</button> -->
-                            
-                        <!-- </div> -->
-                            
                     </div>    
                         
                 </div>

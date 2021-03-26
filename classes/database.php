@@ -13,7 +13,7 @@ class Database{
 
         if($this->conn->connect_error){
             //if database is not connected
-            die("Unable to connect to database" . $this->db_name . " : ". $this->conn->connect_error);
+            die("Unable to connect to database " . $this->db_name . " : ". $this->conn->connect_error);
         }
     }
 }

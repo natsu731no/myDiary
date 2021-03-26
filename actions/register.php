@@ -9,3 +9,4 @@ $origin = $_POST['btn_register']; //$_POST['btn_register'] can be eigther regist
 
 $user = new User;
 $user->createUser($username, $password, $origin);
+// $user->isExisting($username);

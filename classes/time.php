@@ -2,11 +2,15 @@
 
 class Time{
 
-    public function getTime(){
+    public function getDate(){ 
+        $timestamp = new DateTime();
 
-        $timestump = new DateTime();
+        return $timestamp->setTimeZone(new DateTimeZone('Asia/Tokyo'))->format('Y-m-d');
+    }
 
-        return $timestump->setTimeZone(new DateTimeZone('Asia/Tokyo'))->format('Y/m/d');
-        // return date("Y/m/d G:i", $timestump);
+    public function getDateDay(){
+        $timestamp = new DateTime();
+
+        return $timestamp->setTimeZone(new DateTimeZone('Asia/Tokyo'))->format('F d, Y (D)');
     }
 }
